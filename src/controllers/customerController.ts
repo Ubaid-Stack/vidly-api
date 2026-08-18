@@ -3,19 +3,19 @@ import type {
   CreateCustomerInput,
   UpdateCustomerInput,
 } from "../schema/customerSchema.js";
-import Customer from "../models/customerModel.js";
+import * as customerService from "../services/customerService.js";
 
 export const createCustomer = async (
   req: Request<{}, {}, CreateCustomerInput>,
   res: Response,
 ) => {
-  const customer = await Customer.create(req.body);
+  const customer = await customerService.createCustomer(req.body);
 
   res.status(201).json(customer);
 };
 
 export const getCustomers = async (req: Request, res: Response) => {
-  const customers = await Customer.find();
+  const customers = await customerService.getCustomers();
 
   res.status(200).json(customers);
 };
@@ -24,7 +24,7 @@ export const getCustomerById = async (
   req: Request<{ id: string }>,
   res: Response,
 ) => {
-  const customer = await Customer.findById(req.params.id);
+  const customer = await customerService.getCustomerById(req.params.id);
 
   if (!customer) {
     return res.status(404).json({ message: "Customer not found" });
@@ -37,10 +37,10 @@ export const updateCustomer = async (
   req: Request<{ id: string }, {}, UpdateCustomerInput>,
   res: Response,
 ) => {
-  const customer = await Customer.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
+  const customer = await customerService.updateCustomer(
+    req.params.id,
+    req.body,
+  );
 
   if (!customer) {
     return res.status(404).json({
@@ -55,7 +55,7 @@ export const deleteCustomer = async (
   req: Request<{ id: string }>,
   res: Response,
 ) => {
-  const customer = await Customer.findByIdAndDelete(req.params.id);
+  const customer = await customerService.deleteCustomer(req.params.id);
 
   if (!customer) {
     return res.status(404).json({
