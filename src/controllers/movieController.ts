@@ -1,18 +1,21 @@
 import type { Request, Response } from "express";
-import type { CreateMovieInput } from "../schema/movieSchema.js";
-import Movie from "../models/movieModel.js";
+import type {
+  CreateMovieInput,
+  UpdateMovieInput,
+} from "../schema/movieSchema.js";
+import * as movieService from "../services/movieService.js";
 
 export const createMovie = async (
   req: Request<{}, {}, CreateMovieInput>,
   res: Response,
 ) => {
-  const movie = await Movie.create(req.body);
+  const movie = await movieService.createMovie(req.body);
 
   res.status(201).json(movie);
 };
 
 export const getMovies = async (req: Request, res: Response) => {
-  const movies = await Movie.find();
+  const movies = await movieService.getMovies();
   res.status(200).json(movies);
 };
 
@@ -20,7 +23,7 @@ export const getMovieById = async (
   req: Request<{ id: string }>,
   res: Response,
 ) => {
-  const movie = await Movie.findById(req.params.id);
+  const movie = await movieService.getMovieById(req.params.id);
   if (!movie) {
     return res.status(404).json({ message: "Movie not found" });
   }
@@ -28,13 +31,10 @@ export const getMovieById = async (
 };
 
 export const updateMovie = async (
-  req: Request<{ id: string }, {}, CreateMovieInput>,
+  req: Request<{ id: string }, {}, UpdateMovieInput>,
   res: Response,
 ) => {
-  const movie = await Movie.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
+  const movie = await movieService.updateMovie(req.params.id, req.body);
 
   if (!movie) {
     return res.status(404).json({
@@ -49,7 +49,7 @@ export const deleteMovie = async (
   req: Request<{ id: string }>,
   res: Response,
 ) => {
-  const movie = await Movie.findByIdAndDelete(req.params.id);
+  const movie = await movieService.deleteMovie(req.params.id);
   if (!movie) {
     return res.status(404).json({
       message: "Movie with the given ID was not found.",
