@@ -4,6 +4,7 @@ import type {
   CreateGenreInput,
   UpdateGenreInput,
 } from "../schema/genreSchema.js";
+import * as genreService from "../services/genreService.js";
 
 export const createGenre = async (
   req: Request<
@@ -13,13 +14,13 @@ export const createGenre = async (
   >,
   res: Response,
 ) => {
-  const genre = await Genre.create(req.body);
+  const genre = await genreService.createGnreService(req.body);
 
   res.status(201).json(genre);
 };
 
 export const getGenres = async (req: Request, res: Response) => {
-  const genres = await Genre.find();
+  const genres = await genreService.getGenresService();
 
   res.status(200).json(genres);
 };
@@ -28,7 +29,7 @@ export const getGenreById = async (
   req: Request<{ id: string }>,
   res: Response,
 ) => {
-  const genre = await Genre.findById(req.params.id);
+  const genre = await genreService.getGenreByIdService(req.params.id);
 
   if (!genre) {
     return res.status(404).json({
@@ -43,10 +44,7 @@ export const updateGenre = async (
   req: Request<{ id: string }, {}, UpdateGenreInput>,
   res: Response,
 ) => {
-  const genre = await Genre.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
+  const genre = await genreService.updateGenreService(req.params.id, req.body);
 
   if (!genre) {
     return res.status(404).json({
@@ -61,7 +59,7 @@ export const deleteGenre = async (
   req: Request<{ id: string }>,
   res: Response,
 ) => {
-  const genre = await Genre.findByIdAndDelete(req.params.id);
+  const genre = await genreService.deleteGenreService(req.params.id);
 
   if (!genre) {
     return res.status(404).json({
