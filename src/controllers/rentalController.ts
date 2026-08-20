@@ -4,44 +4,32 @@ import type {
   CreateRentalInput,
   UpdateRentalInput,
 } from "../schema/rentalSchema.js";
-
-import Rental from "../models/rentalModel.js";
-import Customer from "../models/customerModel.js";
-import Movie from "../models/movieModel.js";
+import * as rentalService from "../services/rentalService.js";
 
 export const createRental = async (
   req: Request<{}, {}, CreateRentalInput>,
   res: Response,
 ) => {
-  const { customer, movie } = req.body;
+  try {
+    const rental = await rentalService.createRentalService(req.body);
+    return res.status(201).json(rental);
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      (error.message === "Customer not found." ||
+        error.message === "Movie not found.")
+    ) {
+      return res.status(404).json({
+        message: error.message,
+      });
+    }
 
-  const customerExists = await Customer.findById(customer);
-
-  if (!customerExists) {
-    return res.status(404).json({
-      message: "Customer not found.",
-    });
+    throw error;
   }
-
-  const movieExists = await Movie.findById(movie);
-
-  if (!movieExists) {
-    return res.status(404).json({
-      message: "Movie not found.",
-    });
-  }
-
-  const rental = await Rental.create({
-    customer,
-    movie,
-    rentalFee: movieExists.dailyRentalRate,
-  });
-
-  res.status(201).json(rental);
 };
 
 export const getRentals = async (_req: Request, res: Response) => {
-  const rentals = await Rental.find();
+  const rentals = await rentalService.getRentalsService();
 
   res.status(200).json(rentals);
 };
@@ -50,7 +38,7 @@ export const getRentalById = async (
   req: Request<{ id: string }>,
   res: Response,
 ) => {
-  const rental = await Rental.findById(req.params.id);
+  const rental = await rentalService.getRentalByIdService(req.params.id);
 
   if (!rental) {
     return res.status(404).json({
@@ -65,10 +53,10 @@ export const updateRental = async (
   req: Request<{ id: string }, {}, UpdateRentalInput>,
   res: Response,
 ) => {
-  const rental = await Rental.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
+  const rental = await rentalService.updateRentalService(
+    req.params.id,
+    req.body,
+  );
 
   if (!rental) {
     return res.status(404).json({
@@ -83,7 +71,7 @@ export const deleteRental = async (
   req: Request<{ id: string }>,
   res: Response,
 ) => {
-  const rental = await Rental.findByIdAndDelete(req.params.id);
+  const rental = await rentalService.deleteRentalService(req.params.id);
 
   if (!rental) {
     return res.status(404).json({

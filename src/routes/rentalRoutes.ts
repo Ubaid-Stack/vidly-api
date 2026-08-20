@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   createRental,
+  deleteRental,
   getRentalById,
   getRentals,
   updateRental,
@@ -30,7 +31,7 @@ router.put(
 router.delete(
   "/:id",
   validateObjectId({ objectIdName: "Rental" }),
-  updateRental,
+  deleteRental,
 );
 
 export default router;
