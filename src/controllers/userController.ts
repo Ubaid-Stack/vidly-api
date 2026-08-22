@@ -5,6 +5,7 @@ import {
   getUserByIdService,
   getUsersService,
   updateUserService,
+  getUserByEmailService,
 } from "../services/userService.js";
 import type { Request, Response } from "express";
 
@@ -14,7 +15,14 @@ export const createUser = async (
 ) => {
   const { username, email, password } = req.body;
 
-  const newUser = createUserService({ username, email, password });
+  const existingUser = await getUserByEmailService(email);
+
+  if (existingUser) {
+    return res.status(400).json({
+      message: "User with this email already exists",
+    });
+  }
+  const newUser = await createUserService({ username, email, password });
 
   res.status(201).json(newUser);
 };

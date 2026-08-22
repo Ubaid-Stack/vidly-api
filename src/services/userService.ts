@@ -26,3 +26,7 @@ export const updateUserService = async (id: string, data: UpdateUserInput) => {
 export const deleteUserService = async (id: string) => {
   return User.findByIdAndDelete(id);
 };
+
+export const getUserByEmailService = async (email: string) => {
+  return User.findOne({ email });
+};
