@@ -19,7 +19,7 @@ export const createGenre = async (
   res.status(201).json(genre);
 };
 
-export const getGenres = async (req: Request, res: Response) => {
+export const getGenres = async (_req: Request, res: Response) => {
   const genres = await genreService.getGenresService();
 
   res.status(200).json(genres);

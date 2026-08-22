@@ -14,7 +14,7 @@ export const createMovie = async (
   res.status(201).json(movie);
 };
 
-export const getMovies = async (req: Request, res: Response) => {
+export const getMovies = async (_req: Request, res: Response) => {
   const movies = await movieService.getMovies();
   res.status(200).json(movies);
 };
