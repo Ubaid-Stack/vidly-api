@@ -4,6 +4,7 @@ import customerRouter from "./routes/customerRoutes.js";
 import movieRouter from "./routes/movieRoutes.js";
 import rentalRouter from "./routes/rentalRoutes.js";
 import userRouter from "./routes/userRoutes.js";
+import authRouter from "./routes/authRoutes.js";
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
 
 const app = express();
@@ -15,6 +16,7 @@ app.use("/api/customer", customerRouter);
 app.use("/api/movies", movieRouter);
 app.use("/api/rentals", rentalRouter);
 app.use("/api/users", userRouter);
+app.use("/api/auth", authRouter);
 
 // Error middleware MUST be last
 app.use(errorMiddleware);
