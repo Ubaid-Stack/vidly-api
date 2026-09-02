@@ -2,8 +2,9 @@ import type { Request, Response } from "express";
 import type { LoginInput } from "../schema/authSchema.js";
 import loginUser from "../services/authService.js";
 import { env } from "../config/env.js";
+import refreshTokenService from "../services/refreshTokenService.js";
 
-const loginController = async (
+export const loginController = async (
   req: Request<{}, {}, LoginInput>,
   res: Response,
 ) => {
@@ -19,7 +20,7 @@ const loginController = async (
     });
   }
 
-  const { accessToken } = result;
+  const { accessToken, refreshToken } = result;
 
   if (!accessToken) {
     return res.status(401).json({
@@ -33,9 +34,52 @@ const loginController = async (
     maxAge: 15 * 60 * 1000, // 15 minutes
   });
 
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
+
   return res.status(200).json({
     message: "Login successful",
   });
 };
 
-export default loginController;
+export const refreshAccessToken = async (req: Request, res: Response) => {
+  const refreshToken = req.cookies.refreshToken;
+
+  if (!refreshToken) {
+    return res.status(401).json({
+      message: "Refresh token required",
+    });
+  }
+
+  try {
+    const result = await refreshTokenService(refreshToken);
+
+    const { accessToken, refreshToken: newRefreshToken } = result;
+
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 15 * 60 * 1000, // 15 minutes
+    });
+
+    res.cookie("refreshToken", newRefreshToken, {
+      httpOnly: true,
+      secure: env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    return res.status(200).json({
+      message: "Access token refreshed",
+    });
+  } catch (error) {
+    return res.status(401).json({
+      message: "Invalid or expired refresh token",
+    });
+  }
+};

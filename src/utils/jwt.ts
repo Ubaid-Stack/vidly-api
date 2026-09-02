@@ -26,3 +26,23 @@ export const verifyAccessToken = async (token: string) => {
   return payload;
 };
 
+export const createRefreshToken = async (userId: string, tokenId: string) => {
+  return new SignJWT({ userId, tokenId, type: "refresh" })
+    .setProtectedHeader({ alg: "HS256" })
+    .setExpirationTime("7d")
+    .setAudience("my-api")
+    .setIssuedAt()
+    .sign(refreshTokenSecret);
+};
+
+export const verifyRefreshToken = async (token: string) => {
+  const { payload } = await jwtVerify(token, refreshTokenSecret, {
+    audience: "my-api",
+    algorithms: ["HS256"],
+  });
+
+  if (payload.type !== "refresh") {
+    throw new Error("Invalid token type");
+  }
+  return payload;
+};

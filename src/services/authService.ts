@@ -1,7 +1,12 @@
+import RefreshToken from "../models/refreshTokenModel.js";
 import type { LoginInput } from "../schema/authSchema.js";
-import { createAccessToken } from "../utils/jwt.js";
+import { createAccessToken, createRefreshToken } from "../utils/jwt.js";
 
 import { verifyPassword } from "../utils/password.js";
+import {
+  generateRefreshTokenId,
+  hashRefreshToken,
+} from "../utils/refreshToken.js";
 
 import { getUserByEmailWithPasswordService } from "./userService.js";
 
@@ -23,8 +28,25 @@ const loginUser = async (data: LoginInput) => {
 
   const accessToken = await createAccessToken(user._id.toString());
 
+  const tokenId = await generateRefreshTokenId();
+
+  const refreshToken = await createRefreshToken(
+    user._id.toString(),
+    accessToken,
+  );
+
+  const hashedRefreshToken = await hashRefreshToken(refreshToken);
+
+  await RefreshToken.create({
+    userId: user._id.toString(),
+    tokenId,
+    hashedToken: hashedRefreshToken,
+    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+  });
+
   return {
     accessToken,
+    refreshToken,
   };
 };
 
