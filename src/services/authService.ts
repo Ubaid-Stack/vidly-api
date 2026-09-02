@@ -1,4 +1,5 @@
 import type { LoginInput } from "../schema/authSchema.js";
+import { createAccessToken } from "../utils/jwt.js";
 
 import { verifyPassword } from "../utils/password.js";
 
@@ -20,12 +21,11 @@ const loginUser = async (data: LoginInput) => {
     return null;
   }
 
+  const accessToken = await createAccessToken(user._id.toString());
+
   return {
-    id: user._id.toString(),
-    username: user.username,
-    email: user.email,
-    role: user.role,
+    accessToken,
   };
 };
 
-export { loginUser };
+export default loginUser;
