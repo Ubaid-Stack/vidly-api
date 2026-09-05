@@ -1,6 +1,10 @@
 import RefreshToken from "../models/refreshTokenModel.js";
 import type { LoginInput } from "../schema/authSchema.js";
-import { createAccessToken, createRefreshToken } from "../utils/jwt.js";
+import {
+  createAccessToken,
+  createRefreshToken,
+  verifyRefreshToken,
+} from "../utils/jwt.js";
 
 import { verifyPassword } from "../utils/password.js";
 import {
@@ -10,7 +14,7 @@ import {
 
 import { getUserByEmailWithPasswordService } from "./userService.js";
 
-const loginUser = async (data: LoginInput) => {
+export const loginUser = async (data: LoginInput) => {
   const user = await getUserByEmailWithPasswordService(data.email);
 
   if (!user) {
@@ -50,4 +54,15 @@ const loginUser = async (data: LoginInput) => {
   };
 };
 
-export default loginUser;
+export const logoutUser = async (refreshToken: string) => {
+  const payload = await verifyRefreshToken(refreshToken);
+
+  const userId = payload.userId as string;
+
+  const hashedToken = await hashRefreshToken(refreshToken);
+
+  await RefreshToken.deleteOne({
+    hashedToken,
+    userId,
+  });
+};
