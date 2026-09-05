@@ -9,18 +9,34 @@ import {
 import { validateObjectId } from "../middlewares/validateObjectId.js";
 import { validate } from "../middlewares/validate.js";
 import { createMovieSchema, updateMovieSchema } from "../schema/movieSchema.js";
+import authenticate from "../middlewares/authenticateMiddleware.js";
+import authorize from "../middlewares/authorizeMiddleware.js";
 
 const router = Router();
 
 router.get("/", getMovies);
 router.get("/:id", validateObjectId({ objectIdName: "Movie" }), getMovieById);
-router.post("/", validate(createMovieSchema), createMovie);
+router.post(
+  "/",
+  authenticate,
+  authorize("admin"),
+  validate(createMovieSchema),
+  createMovie,
+);
 router.patch(
   "/:id",
+  authenticate,
+  authorize("admin"),
   validateObjectId({ objectIdName: "Movie" }),
   validate(updateMovieSchema),
   updateMovie,
 );
-router.delete("/:id", validateObjectId({ objectIdName: "Movie" }), deleteMovie);
+router.delete(
+  "/:id",
+  authenticate,
+  authorize("admin"),
+  validateObjectId({ objectIdName: "Movie" }),
+  deleteMovie,
+);
 
 export default router;

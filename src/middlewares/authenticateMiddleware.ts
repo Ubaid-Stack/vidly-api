@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 
 import { verifyAccessToken } from "../utils/jwt.js";
+import User from "../models/userModel.js";
 
 const authenticate = async (
   req: Request,
@@ -23,7 +24,19 @@ const authenticate = async (
         message: "Invalid or expired access token",
       });
     }
-    req.userId = payload.userId as string;
+
+    const user = await User.findById(payload.userId).select("role");
+
+    if (!user) {
+      return res.status(401).json({
+        message: "User not found",
+      });
+    }
+
+    req.user = {
+      userId: payload.userId,
+      role: user.role,
+    };
 
     next();
   } catch {
