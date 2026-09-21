@@ -7,8 +7,11 @@ import rentalRouter from "./routes/rentalRoutes.js";
 import userRouter from "./routes/userRoutes.js";
 import authRouter from "./routes/authRoutes.js";
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
+import { httpLogger } from "./utils/logger.js";
 
 const app = express();
+
+app.use(httpLogger);
 
 app.use(express.json());
 app.use(cookieParser());
