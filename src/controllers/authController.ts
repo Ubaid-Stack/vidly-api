@@ -90,7 +90,7 @@ export const logoutController = async (req: Request, res: Response) => {
   try {
     await logoutUser(refreshToken);
   } catch (error) {}
-
+ 
   res.clearCookie("refreshToken", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
