@@ -12,17 +12,19 @@ import {
   createRentalSchema,
   updateRentalSchema,
 } from "../schema/rentalSchema.js";
+import authorize from "../middlewares/authorizeMiddleware.js";
 
 const router = Router();
 
 router.get("/", getRentals);
 
-router.get("/:id", validateObjectId({ objectIdName: "Rental" }), getRentalById);
+router.get("/:id", authorize("admin"), validateObjectId({ objectIdName: "Rental" }), getRentalById);
 
-router.post("/", validate(createRentalSchema), createRental);
+router.post("/",authorize("admin"), validate(createRentalSchema), createRental);
 
 router.put(
   "/:id",
+  authorize("admin"),
   validateObjectId({ objectIdName: "Rental" }),
   validate(updateRentalSchema),
   updateRental,
@@ -30,6 +32,7 @@ router.put(
 
 router.delete(
   "/:id",
+  authorize("admin"),
   validateObjectId({ objectIdName: "Rental" }),
   deleteRental,
 );

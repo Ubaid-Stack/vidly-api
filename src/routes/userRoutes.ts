@@ -9,22 +9,34 @@ import {
   updateUser,
 } from "../controllers/userController.js";
 import { validateObjectId } from "../middlewares/validateObjectId.js";
+import authorize from "../middlewares/authorizeMiddleware.js";
 
 const router = Router();
 
-router.post("/", validate(createUserSchema), createUser);
+router.post("/", authorize("admin"), validate(createUserSchema), createUser);
 
-router.get("/", getUsers);
+router.get("/", authorize("user"), getUsers);
 
-router.get("/:id", validateObjectId({ objectIdName: "User" }), getUserById);
+router.get(
+  "/:id",
+  authorize("user"),
+  validateObjectId({ objectIdName: "User" }),
+  getUserById,
+);
 
 router.put(
   "/:id",
+  authorize("admin"),
   validateObjectId({ objectIdName: "User" }),
   validate(updateUserSchema),
   updateUser,
 );
 
-router.delete("/:id", validateObjectId({ objectIdName: "User" }), deleteUser);
+router.delete(
+  "/:id",
+  authorize("admin"),
+  validateObjectId({ objectIdName: "User" }),
+  deleteUser,
+);
 
 export default router;
