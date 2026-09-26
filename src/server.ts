@@ -6,7 +6,7 @@ import registerProcessHandlers from "./utils/processHandlers.js";
 registerProcessHandlers();
 
 const startServer = async () => {
-  await connectDB();
+  await connectDB(env.MONGO_URI);
   
   app.listen(env.PORT, () => {
     console.log(`Server running on port ${env.PORT}`);
