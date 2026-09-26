@@ -20,7 +20,7 @@ export const updateCustomerSchema = z
   .strictObject({
     name: customerFields.name.optional(),
     phone: customerFields.phone.optional(),
-    isGold: customerFields.isGold.optional(),
+    isGold: z.boolean().optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {
     message: "At least one field must be provided.",
