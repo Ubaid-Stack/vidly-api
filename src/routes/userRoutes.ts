@@ -10,15 +10,23 @@ import {
 } from "../controllers/userController.js";
 import { validateObjectId } from "../middlewares/validateObjectId.js";
 import authorize from "../middlewares/authorizeMiddleware.js";
+import authenticate from "../middlewares/authenticateMiddleware.js";
 
 const router = Router();
 
-router.post("/", authorize("admin"), validate(createUserSchema), createUser);
+router.post(
+  "/",
+  authenticate,
+  authorize("admin"),
+  validate(createUserSchema),
+  createUser,
+);
 
-router.get("/", authorize("user"), getUsers);
+router.get("/", authenticate, authorize("user"), getUsers);
 
 router.get(
   "/:id",
+  authenticate,
   authorize("user"),
   validateObjectId({ objectIdName: "User" }),
   getUserById,
@@ -26,6 +34,7 @@ router.get(
 
 router.put(
   "/:id",
+  authenticate,
   authorize("admin"),
   validateObjectId({ objectIdName: "User" }),
   validate(updateUserSchema),
@@ -34,6 +43,7 @@ router.put(
 
 router.delete(
   "/:id",
+  authenticate,
   authorize("admin"),
   validateObjectId({ objectIdName: "User" }),
   deleteUser,
