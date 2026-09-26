@@ -19,7 +19,7 @@ const refreshTokenService = async (refreshToken: string) => {
   const tokenHash = await hashRefreshToken(refreshToken);
 
   const storedToken = await RefreshToken.findOne({
-    tokenHash,
+    hashedToken: tokenHash,
     userId,
   });
 

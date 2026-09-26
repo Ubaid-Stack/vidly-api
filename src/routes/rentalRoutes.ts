@@ -13,17 +13,31 @@ import {
   updateRentalSchema,
 } from "../schema/rentalSchema.js";
 import authorize from "../middlewares/authorizeMiddleware.js";
+import authenticate from "../middlewares/authenticateMiddleware.js";
 
 const router = Router();
 
 router.get("/", getRentals);
 
-router.get("/:id", authorize("admin"), validateObjectId({ objectIdName: "Rental" }), getRentalById);
+router.get(
+  "/:id",
+  authenticate,
+  authorize("admin"),
+  validateObjectId({ objectIdName: "Rental" }),
+  getRentalById,
+);
 
-router.post("/",authorize("admin"), validate(createRentalSchema), createRental);
+router.post(
+  "/",
+  authenticate,
+  authorize("admin"),
+  validate(createRentalSchema),
+  createRental,
+);
 
 router.put(
   "/:id",
+  authenticate,
   authorize("admin"),
   validateObjectId({ objectIdName: "Rental" }),
   validate(updateRentalSchema),
@@ -32,6 +46,7 @@ router.put(
 
 router.delete(
   "/:id",
+  authenticate,
   authorize("admin"),
   validateObjectId({ objectIdName: "Rental" }),
   deleteRental,
