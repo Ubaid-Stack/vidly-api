@@ -8,10 +8,17 @@ import userRouter from "./routes/userRoutes.js";
 import authRouter from "./routes/authRoutes.js";
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
 import { httpLogger } from "./utils/logger.js";
-
+import helmet from "helmet";
+// compression does not ship TypeScript declarations.
+const compression = require("compression") as () => express.RequestHandler;
+import corsMiddleware from "./utils/cors.js";
 const app = express();
 
 app.use(httpLogger);
+
+app.use(helmet());
+app.use(compression());
+app.use(corsMiddleware());
 
 app.use(express.json());
 app.use(cookieParser());
