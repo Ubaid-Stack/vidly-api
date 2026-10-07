@@ -4,9 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "vitest run --reporter=verbose --coverage",
-    "test:integration": "cross-env NODE_ENV=test vitest run --reporter=verbose",
-    "start": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
     "dev": "tsx watch src/server.ts"
   },
   "keywords": [],
