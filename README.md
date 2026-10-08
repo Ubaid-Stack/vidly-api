@@ -343,6 +343,18 @@ Run the complete test suite with coverage:
 npm test
 ```
 
+Build the production JavaScript output:
+
+```bash
+npm run build
+```
+
+Start the compiled production server:
+
+```bash
+npm start
+```
+
 Run integration tests only:
 
 ```bash
@@ -357,7 +369,8 @@ The integration suite uses a separate database and cleans up its test documents 
 | --- | --- |
 | `npm install` | Install dependencies |
 | `npm run dev` | Start the watch-mode development server |
-| `npm start` | Start the watch-mode server |
+| `npm run build` | Compile TypeScript into `dist/` |
+| `npm start` | Start the compiled production server |
 | `npm test` | Run unit and integration tests with V8 coverage |
 | `npm run test:integration` | Run tests with `NODE_ENV=test` |
 
