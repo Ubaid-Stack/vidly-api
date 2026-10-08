@@ -95,13 +95,19 @@ describe("Movie API", () => {
       expect(response.body).toEqual(
         expect.arrayContaining(
           movies.map((movie) =>
-            expect.objectContaining({
-              _id: movie._id.toString(),
-              title: movie.title,
-              genre: expect.objectContaining({ name: movie.genre.name }),
-              numberInStock: movie.numberInStock,
-              dailyRentalRate: movie.dailyRentalRate,
-            }),
+            (() => {
+              if (!movie.genre) {
+                throw new Error("Created movie is missing its genre");
+              }
+
+              return expect.objectContaining({
+                _id: movie._id.toString(),
+                title: movie.title,
+                genre: expect.objectContaining({ name: movie.genre.name }),
+                numberInStock: movie.numberInStock,
+                dailyRentalRate: movie.dailyRentalRate,
+              });
+            })(),
           ),
         ),
       );

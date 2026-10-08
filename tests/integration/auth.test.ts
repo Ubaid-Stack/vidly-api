@@ -105,6 +105,9 @@ describe("Auth API", () => {
         password,
       });
       const cookies = login.headers["set-cookie"];
+      if (!cookies) {
+        throw new Error("Login did not return authentication cookies");
+      }
 
       const response = await request(app)
         .post("/api/auth/refresh")
@@ -130,7 +133,13 @@ describe("Auth API", () => {
 
       const response = await request(app)
         .post("/api/auth/logout")
-        .set("Cookie", login.headers["set-cookie"]);
+        .set("Cookie", (() => {
+          const cookies = login.headers["set-cookie"];
+          if (!cookies) {
+            throw new Error("Login did not return authentication cookies");
+          }
+          return cookies;
+        })());
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual({ message: "Logout successful" });
